@@ -25,6 +25,7 @@
               }
             ],
             "styles": [
+              "src/material-theme.scss",
               "src/styles.css"
             ]
           },
@@ -54,6 +55,14 @@
         },
         "serve": {
           "builder": "@angular/build:dev-server",
+          "options": {
+            "prebundle": {
+              "exclude": [
+                "@mui/icons-material",
+                "@mui/material"
+              ]
+            }
+          },
           "configurations": {
             "production": {
               "buildTarget": "Json_Forms:build:production"

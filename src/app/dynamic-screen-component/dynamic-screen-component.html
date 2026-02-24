@@ -1,0 +1,15 @@
+<div class="onboarding-container" style="padding: 2rem; max-width: 800px; margin: auto;">
+    <h2 style="font-family: Roboto, sans-serif; color: #333;">Welcome! Let's get you set up.</h2>
+
+    <div style="background: white; padding: 1.5rem; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+        <jsonforms [schema]="schema" [uischema]="uischema" [data]="data" [renderers]="renderers"
+            (dataChange)="onDataChange($event)">
+        </jsonforms>
+
+        <div style="margin-top: 2rem; display: flex; justify-content: flex-end;">
+            <button mat-flat-button color="primary" (click)="submit()" style="padding: 0.5rem 2rem;">
+                Finish Onboarding
+            </button>
+        </div>
+    </div>
+</div>

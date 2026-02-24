@@ -1,0 +1,62 @@
+{
+  "schema": {
+    "type": "object",
+    "properties": {
+      "firstName": {
+        "type": "string",
+        "title": "First Name",
+        "minLength": 2
+      },
+      "lastName": {
+        "type": "string",
+        "title": "Last Name"
+      },
+      "email": {
+        "type": "string",
+        "format": "email",
+        "title": "Email Address"
+      },
+      "age": {
+        "type": "integer",
+        "title": "Age",
+        "minimum": 18
+      },
+      "subscribe": {
+        "type": "boolean",
+        "title": "Subscribe to newsletter"
+      }
+    },
+    "required": ["firstName", "email"]
+  },
+  "uischema": {
+    "type": "VerticalLayout",
+    "elements": [
+      {
+        "type": "Group",
+        "label": "Personal Information",
+        "elements": [
+          {
+            "type": "Control",
+            "scope": "#/properties/firstName"
+          },
+          {
+            "type": "Control",
+            "scope": "#/properties/lastName"
+          }
+        ]
+      },
+      {
+        "type": "Control",
+        "scope": "#/properties/email"
+      },
+      {
+        "type": "Control",
+        "scope": "#/properties/age"
+      },
+      {
+        "type": "Control",
+        "scope": "#/properties/subscribe"
+      }
+    ]
+  }
+}
