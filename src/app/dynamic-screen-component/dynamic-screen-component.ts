@@ -1,121 +1,54 @@
-import { Component } from '@angular/core';
+import { Component, inject, NgZone } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { JsonFormsModule } from '@jsonforms/angular';
+import { JsonFormsAngularMaterialModule } from '@jsonforms/angular-material';
 import { angularMaterialRenderers } from '@jsonforms/angular-material';
 import { MatButtonModule } from '@angular/material/button';
+import { ConfigService } from '../../services/config.service';
 
 @Component({
   selector: 'app-dynamic-screen',
   standalone: true,
-  imports: [JsonFormsModule, MatButtonModule],
+  imports: [
+    CommonModule,
+    JsonFormsModule,
+    JsonFormsAngularMaterialModule,
+    MatButtonModule
+  ],
   templateUrl: './dynamic-screen-component.html',
+  styleUrl: './dynamic-screen-component.css'
 })
 export class DynamicScreenComponent {
+
   renderers = angularMaterialRenderers;
   data: any = {};
+  schema: any = null;
+  uiSchema: any = null;
 
-  schema = {
-    type: 'object',
-    properties: {
-      personalInfo: {
-        type: 'object',
-        properties: {
-          firstName: { type: 'string', title: 'First Name' },
-          lastName: { type: 'string', title: 'Last Name' },
-          birthDate: { type: 'string', format: 'date', title: 'Date of Birth' },
-          gender: {
-            type: 'string',
-            title: 'Gender',
-            enum: ['Male', 'Female', 'Other', 'Prefer not to say']
-          }
-        },
-        required: ['firstName', 'lastName']
-      },
-      professionalInfo: {
-        type: 'object',
-        properties: {
-          jobRole: { type: 'string', title: 'Desired Job Role' },
-          startDate: { type: 'string', format: 'date', title: 'Available Start Date' },
-          experienceLevel: {
-            type: 'string',
-            title: 'Experience Level',
-            enum: ['Junior', 'Mid-level', 'Senior', 'Lead']
-          },
-          bio: { type: 'string', title: 'Short Bio', description: 'Tell us about yourself' }
-        }
-      },
-      preferences: {
-        type: 'object',
-        properties: {
-          remoteWork: { type: 'boolean', title: 'Interested in remote work?' },
-          newsletter: { type: 'boolean', title: 'Receive weekly updates?' }
-        }
-      }
-    }
-  };
+  private configService = inject(ConfigService);
+  private ngZone = inject(NgZone);
 
-  uischema = {
-    type: 'Categorization',
-    elements: [
-      {
-        type: 'Category',
-        label: 'Basic Profile',
-        elements: [
-          {
-            type: 'HorizontalLayout',
-            elements: [
-              { type: 'Control', scope: '#/properties/personalInfo/properties/firstName' },
-              { type: 'Control', scope: '#/properties/personalInfo/properties/lastName' }
-            ]
-          },
-          {
-            type: 'HorizontalLayout',
-            elements: [
-              { type: 'Control', scope: '#/properties/personalInfo/properties/birthDate' },
-              { type: 'Control', scope: '#/properties/personalInfo/properties/gender' }
-            ]
-          }
-        ]
+  ngOnInit() {
+    this.configService.getConfig().subscribe({
+      next: (config) => {
+        this.ngZone.run(() => {
+          console.log("Loaded config:", config);
+          this.schema = config.schema;
+          this.uiSchema = config.uischema;
+        });
       },
-      {
-        type: 'Category',
-        label: 'Work Preferences',
-        elements: [
-          {
-            type: 'VerticalLayout',
-            elements: [
-              { type: 'Control', scope: '#/properties/professionalInfo/properties/jobRole' },
-              {
-                type: 'HorizontalLayout',
-                elements: [
-                  { type: 'Control', scope: '#/properties/professionalInfo/properties/startDate' },
-                  { type: 'Control', scope: '#/properties/professionalInfo/properties/experienceLevel' }
-                ]
-              },
-              { 
-                type: 'Control', 
-                scope: '#/properties/professionalInfo/properties/bio',
-                options: { multi: true } // Renders as a Textarea
-              }
-            ]
-          }
-        ]
-      },
-      {
-        type: 'Category',
-        label: 'Settings',
-        elements: [
-          { type: 'Control', scope: '#/properties/preferences/properties/remoteWork' },
-          { type: 'Control', scope: '#/properties/preferences/properties/newsletter' }
-        ]
+      error: (err) => {
+        console.error('Failed to load form config:', err);
       }
-    ]
-  };
+    });
+  }
 
   onDataChange(event: any) {
-    this.data = event.data;
+    // JSON Forms passes the data object directly
+    this.data = event.data ?? event; 
   }
 
   submit() {
-    console.log('Onboarding Complete:', this.data);
+    console.log('Form submitted with data:', this.data);
   }
 }
